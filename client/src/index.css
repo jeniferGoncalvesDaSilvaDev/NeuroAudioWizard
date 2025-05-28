@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 11% 98%; /* #F5F7FA */
+  --foreground: 215 28% 17%; /* #1E293B */
+  --muted: 210 40% 95%; /* #F1F5F9 */
+  --muted-foreground: 215 16% 47%; /* #64748B */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 215 28% 17%; /* #1E293B */
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 215 28% 17%; /* #1E293B */
+  --border: 220 13% 91%; /* #E2E8F0 */
+  --input: 220 13% 91%; /* #E2E8F0 */
+  --primary: 217 91% 60%; /* #3B82F6 */
+  --primary-foreground: 213 100% 99%; /* #FAFBFF */
+  --secondary: 210 40% 95%; /* #F1F5F9 */
+  --secondary-foreground: 215 25% 27%; /* #334155 */
+  --accent: 262 83% 58%; /* #8B5CF6 */
+  --accent-foreground: 210 40% 98%; /* #F8FAFC */
+  --destructive: 0 84% 60%; /* #EF4444 */
+  --destructive-foreground: 60 9% 98%; /* #FEFCF0 */
+  --ring: 217 91% 60%; /* #3B82F6 */
+  --radius: 0.75rem;
+  
+  /* Success colors */
+  --success: 142 76% 36%; /* #10B981 */
+  --success-foreground: 138 76% 97%; /* #ECFDF5 */
+  
+  /* Custom chart colors */
+  --chart-1: 217 91% 60%; /* #3B82F6 */
+  --chart-2: 142 76% 36%; /* #10B981 */
+  --chart-3: 262 83% 58%; /* #8B5CF6 */
+  --chart-4: 43 96% 56%; /* #F59E0B */
+  --chart-5: 0 84% 60%; /* #EF4444 */
+}
+
+.dark {
+  --background: 224 71% 4%; /* #0F172A */
+  --foreground: 213 31% 91%; /* #E2E8F0 */
+  --muted: 223 47% 11%; /* #1E293B */
+  --muted-foreground: 215 20% 65%; /* #94A3B8 */
+  --popover: 224 71% 4%; /* #0F172A */
+  --popover-foreground: 213 31% 91%; /* #E2E8F0 */
+  --card: 224 71% 4%; /* #0F172A */
+  --card-foreground: 213 31% 91%; /* #E2E8F0 */
+  --border: 215 28% 17%; /* #1E293B */
+  --input: 215 28% 17%; /* #1E293B */
+  --primary: 217 91% 60%; /* #3B82F6 */
+  --primary-foreground: 213 100% 99%; /* #FAFBFF */
+  --secondary: 215 28% 17%; /* #1E293B */
+  --secondary-foreground: 213 31% 91%; /* #E2E8F0 */
+  --accent: 262 83% 58%; /* #8B5CF6 */
+  --accent-foreground: 210 40% 98%; /* #F8FAFC */
+  --destructive: 0 63% 31%; /* #991B1B */
+  --destructive-foreground: 213 31% 91%; /* #E2E8F0 */
+  --ring: 217 91% 60%; /* #3B82F6 */
+  
+  /* Success colors for dark mode */
+  --success: 142 76% 36%; /* #10B981 */
+  --success-foreground: 138 76% 97%; /* #ECFDF5 */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 3s infinite;
+  }
+  
+  .animate-bounce-subtle {
+    animation: bounce 2s infinite;
+  }
+  
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 20px hsla(var(--primary), 0.3);
+  }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* File upload drag and drop styles */
+.drag-over {
+  @apply border-primary bg-primary/5;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.upload-area {
+  transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+  @apply border-primary/50 bg-primary/5;
+}
+
+/* Audio player custom styles */
+.audio-progress {
+  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary)) var(--progress, 0%), hsl(var(--muted)) var(--progress, 0%), hsl(var(--muted)) 100%);
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Success state animations */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-checkmark {
+  animation: checkmark 0.5s ease-out;
+}
+
+/* Toast notification styles */
+.toast-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.toast-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 300ms ease-out;
+}
+
+.toast-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-exit-active {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 300ms ease-in;
+}
