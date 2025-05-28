@@ -43,14 +43,14 @@ export default function Home() {
                 <h1 className="text-xl font-bold text-slate-900">NeuroAudio</h1>
               </div>
               <span className="hidden sm:inline-block px-2 py-1 text-xs font-medium bg-primary/10 text-primary-700 rounded-full">
-                v2.1 Professional
+                v2.1 Profissional
               </span>
             </div>
             <nav className="flex items-center space-x-6">
-              <a href="#" className="text-slate-600 hover:text-slate-900 font-medium">Documentation</a>
+              <a href="#" className="text-slate-600 hover:text-slate-900 font-medium">Documentação</a>
               <a href="#" className="text-slate-600 hover:text-slate-900 font-medium">API</a>
               <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                Support
+                Suporte
               </button>
             </nav>
           </div>
@@ -62,28 +62,28 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900 mb-4">
-            Professional Audio Frequency Processing
+            Processamento Profissional de Frequências de Áudio
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-            Transform your frequency data into high-quality audio files with our advanced NeuroAudio processing engine. 
-            Upload Excel files, generate MP3 audio, and receive detailed technical reports.
+            Transforme seus dados de frequência em arquivos de áudio de alta qualidade com nosso mecanismo avançado NeuroAudio. 
+            Faça upload de arquivos Excel, gere áudio MP3 e receba relatórios técnicos detalhados.
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Excel (.xlsx, .xls) Support</span>
+              <span>Suporte Excel (.xlsx, .xls)</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>High-Quality MP3 Export</span>
+              <span>Exportação MP3 de Alta Qualidade</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Automated PDF Reports</span>
+              <span>Relatórios PDF Automáticos</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Real-time Processing</span>
+              <span>Processamento em Tempo Real</span>
             </div>
           </div>
         </div>
@@ -101,30 +101,30 @@ export default function Home() {
           <div className="space-y-6">
             {/* Technical Specifications */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Technical Specifications</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Especificações Técnicas</h3>
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Frequency Range</span>
+                  <span className="text-slate-600">Faixa de Frequência</span>
                   <span className="font-medium text-slate-900">18-22 kHz</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Audio Duration</span>
-                  <span className="font-medium text-slate-900">30 seconds</span>
+                  <span className="text-slate-600">Duração do Áudio</span>
+                  <span className="font-medium text-slate-900">30 segundos</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Sample Rate</span>
+                  <span className="text-slate-600">Taxa de Amostragem</span>
                   <span className="font-medium text-slate-900">44.1 kHz</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Bit Rate</span>
+                  <span className="text-slate-600">Taxa de Bits</span>
                   <span className="font-medium text-slate-900">192 kbps</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Volume Level</span>
+                  <span className="text-slate-600">Nível de Volume</span>
                   <span className="font-medium text-slate-900">-10 dB</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-600">Engine Version</span>
+                  <span className="text-slate-600">Versão do Motor</span>
                   <span className="font-medium text-slate-900">v2.1.3</span>
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function Home() {
 
             {/* Recent Projects */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Projects</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Projetos Recentes</h3>
               <div className="space-y-3">
                 {recentJobs.slice(0, 5).map((job: ProcessingJob) => (
                   <div 
@@ -165,7 +165,7 @@ export default function Home() {
                 ))}
                 {recentJobs.length === 0 && (
                   <p className="text-sm text-slate-500 text-center py-4">
-                    No recent projects
+                    Nenhum projeto recente
                   </p>
                 )}
               </div>

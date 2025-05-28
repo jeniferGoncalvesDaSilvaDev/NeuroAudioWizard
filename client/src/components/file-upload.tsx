@@ -166,9 +166,9 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-slate-900">Upload Frequency Data</h3>
+          <h3 className="text-xl font-semibold text-slate-900">Upload de Dados de Frequência</h3>
           <span className="px-3 py-1 text-sm font-medium bg-slate-100 text-slate-700 rounded-full">
-            Step 1 of 3
+            Etapa 1 de 3
           </span>
         </div>
 
@@ -192,17 +192,17 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
               </div>
               <div>
                 <p className="text-lg font-medium text-slate-900 mb-2">
-                  Drop your Excel file here, or click to browse
+                  Arraste seu arquivo Excel aqui, ou clique para navegar
                 </p>
                 <p className="text-sm text-slate-500 mb-4">
-                  Supports .xlsx and .xls files up to 50MB
+                  Suporta arquivos .xlsx e .xls até 50MB
                 </p>
                 <p className="text-xs text-slate-400">
-                  Required: Column named "THz" with frequency data
+                  Obrigatório: Coluna chamada "THz" com dados de frequência
                 </p>
               </div>
               <Button variant="default" className="bg-primary hover:bg-primary/90">
-                Select File
+                Selecionar Arquivo
               </Button>
             </div>
           </div>
@@ -242,15 +242,15 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2 text-sm">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-slate-700">File format validation passed</span>
+                      <span className="text-slate-700">Validação de formato aprovada</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-slate-700">File size within limits</span>
+                      <span className="text-slate-700">Tamanho do arquivo dentro dos limites</span>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-slate-700">Filename format valid</span>
+                      <span className="text-slate-700">Formato do nome do arquivo válido</span>
                     </div>
                   </div>
                 ) : (
@@ -276,10 +276,10 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
                   {uploadMutation.isPending ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Uploading...</span>
+                      <span>Carregando...</span>
                     </div>
                   ) : (
-                    'Begin Audio Processing'
+                    'Iniciar Processamento de Áudio'
                   )}
                 </Button>
               </div>
