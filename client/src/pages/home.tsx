@@ -219,12 +219,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center">
-            <p className="text-sm text-slate-400">
-              © 2024 NeuroAudio. All rights reserved.
+          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
+            <div className="mb-4">
+              <a href="mailto:contato@cycor.com.br" className="text-slate-300 hover:text-white underline">
+                contato@cycor.com.br
+              </a>
+            </div>
+            <p className="text-sm text-slate-400 mb-2">
+              © 2025 Cycor Cibernética™ e Scentesia™. Todos os direitos reservados.
             </p>
-            <p className="text-sm text-slate-400 mt-2 sm:mt-0">
-              Version 2.1.3 • Last updated: Dec 2024
+            <p className="text-xs text-slate-500">
+              A API, incluindo seu código, funcionamento e objetivos, são propriedade exclusiva da Cycor Cibernética S.A.™
             </p>
           </div>
         </div>
