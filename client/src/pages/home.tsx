@@ -48,8 +48,8 @@ export default function Home() {
               </span>
             </div>
             <nav className="flex items-center space-x-6">
-              <a href="#" className="text-slate-600 hover:text-slate-900 font-medium">Documentação</a>
-              <a href="#" className="text-slate-600 hover:text-slate-900 font-medium">API</a>
+              <span className="text-slate-600 font-medium">Documentação</span>
+              <span className="text-slate-600 font-medium">API</span>
               <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
                 Suporte
               </button>
@@ -198,29 +198,27 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-white mb-4">Plataforma</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Processamento de Áudio</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Análise de Frequência</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Geração de Relatórios</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Processamento em Lote</a></li>
+                <li><span className="text-slate-300">Processamento de Áudio</span></li>
+                <li><span className="text-slate-300">Análise de Frequência</span></li>
+                <li><span className="text-slate-300">Geração de Relatórios</span></li>
+                <li><span className="text-slate-300">Processamento em Lote</span></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-white mb-4">Suporte</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contatar Suporte</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Status do Sistema</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
+                <li><span className="text-slate-300">Central de Ajuda</span></li>
+                <li><span className="text-slate-300">Contatar Suporte</span></li>
+                <li><span className="text-slate-300">Status do Sistema</span></li>
+                <li><span className="text-slate-300">Política de Privacidade</span></li>
               </ul>
             </div>
           </div>
 
           <div className="mt-8 pt-8 border-t border-slate-800 text-center">
             <div className="mb-4">
-              <a href="mailto:contato@cycor.com.br" className="text-slate-300 hover:text-white underline transition-colors">
-                contato@cycor.com.br
-              </a>
+              <span className="text-slate-300">contato@cycor.com.br</span>
             </div>
             <p className="text-sm text-slate-400 mb-2">
               © 2025 Cycor Cibernética™ e Scentesia™. Todos os direitos reservados.

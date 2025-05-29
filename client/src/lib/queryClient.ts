@@ -44,14 +44,50 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      retry: (failureCount, error) => {
+        // Don't retry on 404s or network errors
+        if (error instanceof Error && error.message.includes('404')) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+      queryFn: async ({ queryKey }) => {
+        try {
+          const [url, ...params] = queryKey as [string, ...unknown[]];
+
+          if (!url) {
+            throw new Error('Query key must include a URL');
+          }
+
+          let fullUrl = url;
+          if (params.length > 0 && params[0]) {
+            const lastParam = params[params.length - 1];
+            if (typeof lastParam === 'string' || typeof lastParam === 'number') {
+              fullUrl = `${url}/${lastParam}`;
+            }
+          }
+
+          const response = await fetch(fullUrl);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Query error:', error);
+          throw error;
+        }
+      },
     },
     mutations: {
       retry: false,
+      onError: (error) => {
+        console.error('Mutation error:', error);
+      },
     },
   },
 });
