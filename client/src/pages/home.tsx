@@ -47,11 +47,8 @@ export default function Home() {
                 v2.1 Profissional
               </span>
             </div>
-            <nav className="flex items-center space-x-6">
-              <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                Suporte
-              </button>
-            </nav>
+            <div className="flex items-center space-x-6">
+            </div>
           </div>
         </div>
       </header>
@@ -181,48 +178,14 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-16 bg-slate-900 text-slate-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-1">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-6 h-6 bg-gradient-to-br from-primary to-accent-500 rounded-lg"></div>
-                <span className="font-bold text-white">NeuroAudio</span>
-              </div>
-              <p className="text-sm text-slate-400 mb-4">
-                Plataforma profissional de processamento de frequências de áudio para aplicações científicas e de pesquisa.
-              </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="w-6 h-6 bg-gradient-to-br from-primary to-accent-500 rounded-lg"></div>
+              <span className="font-bold text-white">NeuroAudio</span>
             </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Plataforma</h4>
-              <ul className="space-y-2 text-sm">
-                <li><span className="text-slate-300">Processamento de Áudio</span></li>
-                <li><span className="text-slate-300">Análise de Frequência</span></li>
-                <li><span className="text-slate-300">Geração de Relatórios</span></li>
-                <li><span className="text-slate-300">Processamento em Lote</span></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Suporte</h4>
-              <ul className="space-y-2 text-sm">
-                <li><span className="text-slate-300">Central de Ajuda</span></li>
-                <li><span className="text-slate-300">Contatar Suporte</span></li>
-                <li><span className="text-slate-300">Status do Sistema</span></li>
-                <li><span className="text-slate-300">Política de Privacidade</span></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-8 border-t border-slate-800 text-center">
-            <div className="mb-4">
-              <span className="text-slate-300">contato@cycor.com.br</span>
-            </div>
-            <p className="text-sm text-slate-400 mb-2">
+            <p className="text-sm text-slate-400 mb-4">
               © 2025 Cycor Cibernética™ e Scentesia™. Todos os direitos reservados.
-            </p>
-            <p className="text-xs text-slate-500">
-              A API, incluindo seu código, funcionamento e objetivos, são propriedade exclusiva da Cycor Cibernética S.A.™
             </p>
           </div>
         </div>
