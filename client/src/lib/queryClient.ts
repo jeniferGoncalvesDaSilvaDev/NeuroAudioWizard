@@ -46,14 +46,16 @@ export const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error) => {
         // Don't retry on 404s or network errors
-        if (error instanceof Error && error.message.includes('404')) {
+        if (error instanceof Error && (error.message.includes('404') || error.message.includes('Failed to fetch'))) {
           return false;
         }
-        return failureCount < 3;
+        return failureCount < 2;
       },
       staleTime: 1000 * 60 * 5, // 5 minutes
       gcTime: 1000 * 60 * 10, // 10 minutes
-      queryFn: async ({ queryKey }) => {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      queryFn: async ({ queryKey, signal }) => {
         try {
           const [url, ...params] = queryKey as [string, ...unknown[]];
 
@@ -69,16 +71,34 @@ export const queryClient = new QueryClient({
             }
           }
 
-          const response = await fetch(fullUrl);
+          const response = await fetch(fullUrl, {
+            signal,
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
 
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.status === 404) {
+              return null;
+            }
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON');
           }
 
           const data = await response.json();
           return data;
         } catch (error) {
-          console.error('Query error:', error);
+          if (error instanceof Error && error.name === 'AbortError') {
+            throw error;
+          }
+          console.warn('Query failed:', error);
           throw error;
         }
       },
@@ -86,7 +106,7 @@ export const queryClient = new QueryClient({
     mutations: {
       retry: false,
       onError: (error) => {
-        console.error('Mutation error:', error);
+        console.warn('Mutation error:', error);
       },
     },
   },

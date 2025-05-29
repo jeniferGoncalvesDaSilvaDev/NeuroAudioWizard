@@ -48,8 +48,6 @@ export default function Home() {
               </span>
             </div>
             <nav className="flex items-center space-x-6">
-              <span className="text-slate-600 font-medium">Documentação</span>
-              <span className="text-slate-600 font-medium">API</span>
               <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
                 Suporte
               </button>
