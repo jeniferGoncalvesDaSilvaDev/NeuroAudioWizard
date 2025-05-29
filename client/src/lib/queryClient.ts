@@ -45,69 +45,27 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // Don't retry on 404s or network errors
-        if (error instanceof Error && (error.message.includes('404') || error.message.includes('Failed to fetch'))) {
-          return false;
+        // Don't retry on 4xx errors
+        if (error instanceof Error && 'status' in error) {
+          const status = (error as any).status;
+          if (status >= 400 && status < 500) {
+            return false;
+          }
         }
-        return failureCount < 2;
+        return failureCount < 2; // Reduced retry attempts
       },
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
       refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      queryFn: async ({ queryKey, signal }) => {
-        try {
-          const [url, ...params] = queryKey as [string, ...unknown[]];
-
-          if (!url) {
-            throw new Error('Query key must include a URL');
-          }
-
-          let fullUrl = url;
-          if (params.length > 0 && params[0]) {
-            const lastParam = params[params.length - 1];
-            if (typeof lastParam === 'string' || typeof lastParam === 'number') {
-              fullUrl = `${url}/${lastParam}`;
-            }
-          }
-
-          const response = await fetch(fullUrl, {
-            signal,
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            if (response.status === 404) {
-              return null;
-            }
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-
-          const contentType = response.headers.get('content-type');
-          if (!contentType || !contentType.includes('application/json')) {
-            throw new Error('Response is not JSON');
-          }
-
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          if (error instanceof Error && error.name === 'AbortError') {
-            throw error;
-          }
-          console.warn('Query failed:', error);
-          throw error;
-        }
-      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
     },
     mutations: {
       retry: false,
-      onError: (error) => {
-        console.warn('Mutation error:', error);
-      },
     },
+  },
+  logger: {
+    log: () => {}, // Disable query client logging
+    warn: () => {}, // Disable query client warnings
+    error: () => {}, // Disable query client errors
   },
 });
