@@ -3,6 +3,7 @@ import { Music } from "lucide-react";
 import FileUpload from "@/components/file-upload";
 import ProcessingStatus from "@/components/processing-status";
 import ResultsSection from "@/components/results-section";
+import RealtimeAudioPreview from "@/components/realtime-audio-preview";
 import { useQuery } from "@tanstack/react-query";
 import type { ProcessingJob } from "@shared/schema";
 
@@ -94,6 +95,12 @@ export default function Home() {
           <div className="lg:col-span-2 space-y-8">
             <FileUpload onJobCreated={handleJobCreated} />
             {currentJob && <ProcessingStatus job={currentJob} />}
+            {currentJob && currentJob.status === 'processing' && (
+              <RealtimeAudioPreview 
+                jobId={currentJob.id} 
+                isProcessing={currentJob.status === 'processing'} 
+              />
+            )}
             {currentJob?.status === 'completed' && <ResultsSection job={currentJob} />}
           </div>
 

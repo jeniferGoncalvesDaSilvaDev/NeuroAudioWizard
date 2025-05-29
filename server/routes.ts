@@ -240,6 +240,23 @@ async function processFileAsync(jobId: number, filePath: string, originalName: s
     pythonProcess.stdout.on('data', (data) => {
       output += data.toString();
       console.log(`Processing output: ${data}`);
+      
+      // Parse progress updates and send via WebSocket
+      const dataStr = data.toString();
+      if (dataStr.includes('Progress:')) {
+        // Extract progress information from Python output
+        const progressMatch = dataStr.match(/Progress: (\d+)\/(\d+) frequencies processed/);
+        if (progressMatch) {
+          const [, current, total] = progressMatch;
+          broadcastJobUpdate(jobId, {
+            type: 'audio_preview',
+            jobId,
+            frequencyProgress: parseInt(current),
+            totalFrequencies: parseInt(total),
+            currentFrequency: 0, // Will be enhanced later
+          });
+        }
+      }
     });
 
     pythonProcess.stderr.on('data', (data) => {
