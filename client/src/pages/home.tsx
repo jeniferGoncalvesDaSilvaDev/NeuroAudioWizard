@@ -10,12 +10,6 @@ import type { ProcessingJob } from "@shared/schema";
 export default function Home() {
   const [currentJobId, setCurrentJobId] = useState<number | null>(null);
 
-  // Get recent jobs for sidebar
-  const { data: recentJobs = [] } = useQuery({
-    queryKey: ['/api/jobs'],
-    refetchInterval: 5000, // Refresh every 5 seconds
-  });
-
   // Get current job status if we have a job ID
   const { data: currentJob } = useQuery({
     queryKey: ['/api/jobs', currentJobId],
@@ -132,44 +126,26 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Recent Projects */}
+            {/* Processing Tips */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Projetos Recentes</h3>
-              <div className="space-y-3">
-                {recentJobs.slice(0, 5).map((job: ProcessingJob) => (
-                  <div 
-                    key={job.id}
-                    className="flex items-center space-x-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer"
-                    onClick={() => setCurrentJobId(job.id)}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      job.status === 'completed' ? 'bg-green-100' :
-                      job.status === 'failed' ? 'bg-red-100' :
-                      job.status === 'processing' ? 'bg-blue-100' :
-                      'bg-slate-100'
-                    }`}>
-                      <Music className={`w-4 h-4 ${
-                        job.status === 'completed' ? 'text-green-600' :
-                        job.status === 'failed' ? 'text-red-600' :
-                        job.status === 'processing' ? 'text-blue-600' :
-                        'text-slate-600'
-                      }`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate">
-                        {job.company_name}_{job.aroma_id?.slice(0, 6) || job.id}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {new Date(job.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {recentJobs.length === 0 && (
-                  <p className="text-sm text-slate-500 text-center py-4">
-                    Nenhum projeto recente
-                  </p>
-                )}
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Dicas de Processamento</h3>
+              <div className="space-y-3 text-sm text-slate-600">
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>Use arquivos Excel com coluna "THz" para melhores resultados</p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>O processamento pode levar alguns minutos dependendo do número de frequências</p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>Arquivos MP3 e relatórios PDF são gerados automaticamente</p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>Downloads funcionam diretamente no navegador móvel</p>
+                </div>
               </div>
             </div>
           </div>

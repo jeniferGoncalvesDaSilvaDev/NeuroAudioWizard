@@ -247,6 +247,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download routes with range support for better mobile experience
+  app.get('/api/download/audio/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '..', 'output');
+
+    // Find the file in subdirectories
+    const findFile = (dir: string, target: string): string | null => {
+      const items = fs.readdirSync(dir);
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        if (fs.statSync(itemPath).isDirectory()) {
+          const found = findFile(itemPath, target);
+          if (found) return found;
+        } else if (item === target) {
+          return itemPath;
+        }
+      }
+      return null;
+    };
+
+    const audioPath = findFile(filePath, filename);
+
+    if (!audioPath || !fs.existsSync(audioPath)) {
+      console.log(`Audio file not found: ${filename}`);
+      return res.status(404).json({ error: 'Audio file not found' });
+    }
+
+    try {
+      const rangeHeader = req.headers.range;
+      const fileSize = fs.statSync(audioPath).size;
+
+      if (rangeHeader) {
+        // Parse range header: "bytes=0-1023"
+        let [start, end] = rangeHeader.replace(/bytes=/, "").split("-").map(x => parseInt(x, 10));
+
+        if (isNaN(start)) start = 0;
+        if (isNaN(end) || end >= fileSize) end = fileSize - 1;
+
+        const contentLength = end - start + 1;
+        const stream = fs.createReadStream(audioPath, { start, end });
+
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': contentLength,
+          'Content-Type': 'audio/mpeg',
+          'Content-Disposition': `attachment; filename="${filename}"`
+        });
+
+        stream.pipe(res);
+      } else {
+        // No range header - send entire file
+        res.writeHead(200, {
+          'Content-Length': fileSize,
+          'Content-Type': 'audio/mpeg',
+          'Content-Disposition': `attachment; filename="${filename}"`
+        });
+
+        const stream = fs.createReadStream(audioPath);
+        stream.pipe(res);
+      }
+    } catch (error) {
+      console.error('Error serving audio file:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   return httpServer;
 }
 

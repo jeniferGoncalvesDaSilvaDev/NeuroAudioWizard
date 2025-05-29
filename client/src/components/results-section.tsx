@@ -26,7 +26,7 @@ interface ResultsSectionProps {
   job: Job;
 }
 
-function ResultsSection({ job }: ResultsSectionProps) {
+export default function ResultsSection({ job }: ResultsSectionProps) {
   const [downloadProgress, setDownloadProgress] = useState<{[key: string]: number}>({});
 
   const downloadFile = async (type: 'audio' | 'pdf') => {
@@ -157,5 +157,3 @@ function ResultsSection({ job }: ResultsSectionProps) {
     </Card>
   );
 }
-
-export default ResultsSection;
