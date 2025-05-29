@@ -184,8 +184,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-16 bg-slate-900 text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-6 h-6 bg-gradient-to-br from-primary to-accent-500 rounded-lg"></div>
                 <span className="font-bold text-white">NeuroAudio</span>
@@ -206,16 +206,6 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Recursos</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Documentação</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Referência da API</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Arquivos de Exemplo</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Melhores Práticas</a></li>
-              </ul>
-            </div>
-
-            <div>
               <h4 className="font-semibold text-white mb-4">Suporte</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
@@ -228,7 +218,7 @@ export default function Home() {
 
           <div className="mt-8 pt-8 border-t border-slate-800 text-center">
             <div className="mb-4">
-              <a href="mailto:contato@cycor.com.br" className="text-slate-300 hover:text-white underline">
+              <a href="mailto:contato@cycor.com.br" className="text-slate-300 hover:text-white underline transition-colors">
                 contato@cycor.com.br
               </a>
             </div>
