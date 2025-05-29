@@ -225,15 +225,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.setHeader('Content-Length', chunkSize);
         res.setHeader('Content-Type', contentType);
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Cache-Control', 'no-cache');
 
         const fileStream = fs.createReadStream(filePath, { start, end });
         fileStream.pipe(res);
       } else {
-        // Regular download
+        // Regular download with mobile-friendly headers
         res.setHeader('Content-Type', contentType);
         res.setHeader('Content-Length', fileSize);
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
         res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
+        // Additional headers for mobile compatibility
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
         const fileStream = fs.createReadStream(filePath);
         fileStream.pipe(res);
