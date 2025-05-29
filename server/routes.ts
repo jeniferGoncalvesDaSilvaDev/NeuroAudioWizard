@@ -3,10 +3,10 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { spawn } from "child_process";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { spawn } from 'child_process';
 import { insertProcessingJobSchema } from "@shared/schema";
 
 // WebSocket connections map for real-time updates
@@ -36,12 +36,12 @@ const upload = multer({
       'application/vnd.ms-excel'
     ];
     const allowedExtensions = ['.xlsx', '.xls'];
-    
+
     const hasValidType = allowedTypes.includes(file.mimetype);
     const hasValidExtension = allowedExtensions.some(ext => 
       file.originalname.toLowerCase().endsWith(ext)
     );
-    
+
     if (hasValidType || hasValidExtension) {
       cb(null, true);
     } else {
@@ -62,15 +62,15 @@ const ensureDirectories = () => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   ensureDirectories();
-  
+
   const httpServer = createServer(app);
-  
+
   // Setup WebSocket server for real-time updates
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-  
+
   wss.on('connection', (ws, req) => {
     console.log('[WebSocket] Client connected');
-    
+
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message.toString());
@@ -87,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('[WebSocket] Error parsing message:', error);
       }
     });
-    
+
     ws.on('close', () => {
       // Remove from all subscriptions
       wsConnections.forEach((connections, jobId) => {
@@ -114,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { originalname, filename, size } = req.file;
-      
+
       // Extract company name from filename (e.g., Frequencias_Aroma_Company1.xlsx)
       const companyMatch = originalname.match(/Frequencias_Aroma_(.+)\.(xlsx?|xls)$/i);
       const companyName = companyMatch ? companyMatch[1] : 'Unknown';
@@ -149,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const jobId = parseInt(req.params.id);
       const job = await storage.getJob(jobId);
-      
+
       if (!job) {
         return res.status(404).json({ message: 'Job not found' });
       }
@@ -180,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const jobId = parseInt(req.params.jobId);
       const type = req.params.type; // 'audio' or 'pdf'
-      
+
       const job = await storage.getJob(jobId);
       if (!job) {
         return res.status(404).json({ message: 'Job not found' });
@@ -192,7 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let fileName: string;
       let contentType: string;
-      
+
       if (type === 'audio' && job.audioFileName) {
         fileName = job.audioFileName;
         contentType = 'audio/mpeg';
@@ -204,17 +204,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const filePath = path.join('output', job.company_name || 'Unknown', fileName);
-      
+
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: 'File not found' });
       }
 
       res.setHeader('Content-Type', contentType);
       res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      
+
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
-      
+
     } catch (error) {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : 'Download failed' 
@@ -233,14 +233,14 @@ async function processFileAsync(jobId: number, filePath: string, originalName: s
 
     // Run Python audio processor
     const pythonProcess = spawn('python3', ['server/audio_processor.py', filePath, originalName, jobId.toString()]);
-    
+
     let output = '';
     let errorOutput = '';
 
     pythonProcess.stdout.on('data', (data) => {
       output += data.toString();
       console.log(`Processing output: ${data}`);
-      
+
       // Parse progress updates and send via WebSocket
       const dataStr = data.toString();
       if (dataStr.includes('Progress:')) {

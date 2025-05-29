@@ -72,27 +72,50 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
 
   const handleDownload = async (type: 'audio' | 'pdf') => {
     try {
-      const response = await fetch(`/api/download/${job.id}/${type}`);
+      toast({
+        title: "Preparando Download",
+        description: `Preparando download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'}...`,
+      });
+
+      const response = await fetch(`/api/download/${job.id}/${type}`, {
+        method: 'GET',
+        headers: {
+          'Accept': type === 'audio' ? 'audio/mpeg' : 'application/pdf',
+        },
+      });
       
       if (!response.ok) {
-        throw new Error(`Download failed: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Download failed: ${response.status} - ${errorText}`);
       }
 
       const blob = await response.blob();
+      
+      if (blob.size === 0) {
+        throw new Error('File is empty');
+      }
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = type === 'audio' ? job.audioFileName! : job.pdfFileName!;
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
       toast({
-        title: "Download Iniciado",
-        description: `Download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'} foi iniciado.`,
+        title: "Download Concluído",
+        description: `Download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'} foi concluído com sucesso.`,
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Falha no Download",
         description: error instanceof Error ? error.message : "Falha ao fazer download do arquivo",

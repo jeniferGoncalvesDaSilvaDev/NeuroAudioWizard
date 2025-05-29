@@ -13,6 +13,8 @@ def remove_accents(text):
         # Normalize unicode characters and remove accents
         normalized = unicodedata.normalize('NFD', text)
         ascii_text = normalized.encode('ascii', 'ignore').decode('ascii')
+        # Replace common problematic characters
+        ascii_text = ascii_text.replace('ç', 'c').replace('Ç', 'C')
         return ascii_text
     return str(text)
 
@@ -24,9 +26,9 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
             
         pdf = FPDF()
         pdf.add_page()
-        # Use a font that supports unicode characters
+        # Use Arial font with latin-1 encoding
         pdf.set_font("Arial", size=12)
-        pdf.set_title("NeuroAudio Technical Report")
+        pdf.set_title(remove_accents("NeuroAudio Technical Report"))
 
         # Header
         pdf.cell(200, 10, txt="NeuroAudio Technical Report", ln=True, align='C')
@@ -84,7 +86,7 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
 
         # Histograma de Frequencias
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 8, txt="HISTOGRAMA DE FREQUENCIAS", ln=True)
+        pdf.cell(200, 8, txt=remove_accents("HISTOGRAMA DE FREQUENCIAS"), ln=True)
         pdf.ln(5)
         
         pdf.set_font("Arial", size=8)
@@ -97,9 +99,9 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
         max_count = max(hist) if len(hist) > 0 else 1
         
         for i, (count, start, end) in enumerate(zip(hist, bin_edges[:-1], bin_edges[1:])):
-            # Barra visual usando caracteres
+            # Barra visual usando caracteres ASCII seguros
             bar_length = int((count / max_count) * 30) if max_count > 0 else 0
-            bar = "█" * bar_length + "░" * (30 - bar_length)
+            bar = "#" * bar_length + "-" * (30 - bar_length)
             
             range_text = f"{start:.3f}-{end:.3f} THz"
             pdf.cell(40, 4, txt=range_text, ln=False)
