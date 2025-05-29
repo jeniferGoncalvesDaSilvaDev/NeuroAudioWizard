@@ -14,6 +14,8 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(30); // 30 seconds as per specs
   const [autoDownloaded, setAutoDownloaded] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<{[key: string]: number}>({});
+  const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(new Set());
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
@@ -72,54 +74,91 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
 
   const handleDownload = async (type: 'audio' | 'pdf') => {
     try {
-      toast({
-        title: "Preparando Download",
-        description: `Preparando download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'}...`,
-      });
-
-      const response = await fetch(`/api/download/${job.id}/${type}`, {
-        method: 'GET',
-        headers: {
-          'Accept': type === 'audio' ? 'audio/mpeg' : 'application/pdf',
-        },
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Download failed: ${response.status} - ${errorText}`);
-      }
-
-      const blob = await response.blob();
-      
-      if (blob.size === 0) {
-        throw new Error('File is empty');
-      }
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = type === 'audio' ? job.audioFileName! : job.pdfFileName!;
-      link.style.display = 'none';
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      setDownloadingFiles(prev => new Set(prev).add(type));
+      setDownloadProgress(prev => ({ ...prev, [type]: 0 }));
 
       toast({
-        title: "Download Concluído",
-        description: `Download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'} foi concluído com sucesso.`,
+        title: "Iniciando Download",
+        description: `Baixando ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'}...`,
       });
+
+      return new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setDownloadProgress(prev => ({ ...prev, [type]: progress }));
+          }
+        });
+        
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const blob = new Blob([xhr.response], {
+                type: type === 'audio' ? 'audio/mpeg' : 'application/pdf'
+              });
+              
+              if (blob.size === 0) {
+                throw new Error('File is empty');
+              }
+
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = type === 'audio' ? job.audioFileName! : job.pdfFileName!;
+              link.style.display = 'none';
+              
+              document.body.appendChild(link);
+              link.click();
+              
+              // Clean up
+              setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+              }, 100);
+
+              toast({
+                title: "Download Concluído",
+                description: `${type === 'audio' ? 'Arquivo de áudio' : 'Relatório PDF'} baixado com sucesso!`,
+              });
+              
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            reject(new Error(`Download failed: ${xhr.statusText}`));
+          }
+        });
+        
+        xhr.addEventListener('error', () => {
+          reject(new Error('Download failed'));
+        });
+        
+        xhr.responseType = 'arraybuffer';
+        xhr.open('GET', `/api/download/${job.id}/${type}`);
+        xhr.setRequestHeader('Accept', type === 'audio' ? 'audio/mpeg' : 'application/pdf');
+        xhr.send();
+      });
+
     } catch (error) {
       console.error('Download error:', error);
       toast({
         title: "Falha no Download",
         description: error instanceof Error ? error.message : "Falha ao fazer download do arquivo",
         variant: "destructive",
+      });
+    } finally {
+      setDownloadingFiles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(type);
+        return newSet;
+      });
+      setDownloadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[type];
+        return newProgress;
       });
     }
   };
@@ -136,40 +175,40 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
           </span>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Audio File */}
-          <div className="border border-slate-200 rounded-xl p-6 hover:border-primary/30 transition-colors">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="border border-slate-200 rounded-xl p-4 sm:p-6 hover:border-primary/30 transition-all hover:shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                 <Music className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-slate-900 mb-2">Arquivo de Áudio (MP3)</h4>
-                <p className="text-sm text-slate-600 mb-4">{job.audioFileName}</p>
+                <h4 className="font-semibold text-slate-900 mb-2 text-center sm:text-left">Arquivo de Áudio (MP3)</h4>
+                <p className="text-sm text-slate-600 mb-4 text-center sm:text-left break-all">{job.audioFileName}</p>
                 
                 {/* Audio Player */}
-                <div className="bg-slate-50 rounded-lg p-4 mb-4">
-                  <div className="flex items-center space-x-3">
+                <div className="bg-slate-50 rounded-lg p-3 sm:p-4 mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
                     <Button
                       size="sm"
                       onClick={handlePlayPause}
-                      className="w-8 h-8 p-0 bg-primary hover:bg-primary/90"
+                      className="w-10 h-10 p-0 bg-primary hover:bg-primary/90 mx-auto sm:mx-0 flex-shrink-0"
                     >
                       {isPlaying ? (
-                        <Pause className="w-4 h-4 text-white" />
+                        <Pause className="w-5 h-5 text-white" />
                       ) : (
-                        <Play className="w-4 h-4 text-white ml-0.5" />
+                        <Play className="w-5 h-5 text-white ml-0.5" />
                       )}
                     </Button>
                     <div className="flex-1">
-                      <div className="w-full bg-slate-200 rounded-full h-2 cursor-pointer">
+                      <div className="w-full bg-slate-200 rounded-full h-3 cursor-pointer">
                         <div 
-                          className="bg-primary h-2 rounded-full transition-all"
+                          className="bg-primary h-3 rounded-full transition-all"
                           style={{ width: `${progressPercentage}%` }}
                         ></div>
                       </div>
                     </div>
-                    <span className="text-xs text-slate-500 font-mono">
+                    <span className="text-xs text-slate-500 font-mono text-center sm:text-right whitespace-nowrap">
                       {formatTime(currentTime)} / {formatTime(duration)}
                     </span>
                   </div>
@@ -193,26 +232,51 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                   </div>
                 </div>
 
+                {downloadingFiles.has('audio') && (
+                  <div className="mb-3">
+                    <div className="flex justify-between text-sm text-slate-600 mb-2">
+                      <span>Baixando áudio...</span>
+                      <span>{downloadProgress.audio || 0}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${downloadProgress.audio || 0}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
                 <Button 
                   onClick={() => handleDownload('audio')}
-                  className="w-full bg-primary hover:bg-primary/90 text-white"
+                  disabled={downloadingFiles.has('audio')}
+                  className="w-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Baixar MP3
+                  {downloadingFiles.has('audio') ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Baixando...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Baixar MP3
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
           </div>
 
           {/* PDF Report */}
-          <div className="border border-slate-200 rounded-xl p-6 hover:border-red-300 transition-colors">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="border border-slate-200 rounded-xl p-4 sm:p-6 hover:border-red-300 transition-all hover:shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                 <FileText className="w-6 h-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-slate-900 mb-2">Relatório Técnico (PDF)</h4>
-                <p className="text-sm text-slate-600 mb-4">{job.pdfFileName}</p>
+                <h4 className="font-semibold text-slate-900 mb-2 text-center sm:text-left">Relatório Técnico (PDF)</h4>
+                <p className="text-sm text-slate-600 mb-4 text-center sm:text-left break-all">{job.pdfFileName}</p>
                 
                 {/* Report Preview */}
                 <div className="bg-slate-50 rounded-lg p-4 mb-4">
@@ -237,12 +301,37 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                   </div>
                 </div>
 
+                {downloadingFiles.has('pdf') && (
+                  <div className="mb-3">
+                    <div className="flex justify-between text-sm text-slate-600 mb-2">
+                      <span>Baixando PDF...</span>
+                      <span>{downloadProgress.pdf || 0}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${downloadProgress.pdf || 0}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
                 <Button 
                   onClick={() => handleDownload('pdf')}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white"
+                  disabled={downloadingFiles.has('pdf')}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg transition-all"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Baixar PDF
+                  {downloadingFiles.has('pdf') ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Baixando...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Baixar PDF
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -251,20 +340,23 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
 
         {/* Batch Actions */}
         <div className="mt-6 pt-6 border-t border-slate-200">
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" className="flex items-center space-x-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Button variant="outline" className="flex items-center justify-center space-x-2 hover:bg-slate-50 transition-all">
               <Download className="w-4 h-4" />
-              <span>Download All Files</span>
+              <span className="hidden sm:inline">Download All Files</span>
+              <span className="sm:hidden">Download Tudo</span>
             </Button>
             
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button variant="outline" className="flex items-center justify-center space-x-2 hover:bg-slate-50 transition-all">
               <Share className="w-4 h-4" />
-              <span>Share Results</span>
+              <span className="hidden sm:inline">Share Results</span>
+              <span className="sm:hidden">Compartilhar</span>
             </Button>
             
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button variant="outline" className="flex items-center justify-center space-x-2 hover:bg-slate-50 transition-all">
               <RotateCcw className="w-4 h-4" />
-              <span>Process Another File</span>
+              <span className="hidden sm:inline">Process Another File</span>
+              <span className="sm:hidden">Novo Arquivo</span>
             </Button>
           </div>
         </div>

@@ -22,6 +22,7 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validation, setValidation] = useState<FileValidation | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -31,16 +32,39 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
+      // Reset progress
+      setUploadProgress(0);
+      
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(progress);
+          }
+        });
+        
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              resolve(response);
+            } catch (error) {
+              reject(new Error('Invalid response format'));
+            }
+          } else {
+            reject(new Error(`Upload failed: ${xhr.statusText}`));
+          }
+        });
+        
+        xhr.addEventListener('error', () => {
+          reject(new Error('Upload failed'));
+        });
+        
+        xhr.open('POST', '/api/upload');
+        xhr.send(formData);
       });
-      
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-      
-      return response.json();
     },
     onSuccess: (data) => {
       toast({
@@ -264,12 +288,27 @@ export default function FileUpload({ onJobCreated }: FileUploadProps) {
                   </div>
                 )}
 
+                {uploadMutation.isPending && (
+                  <div className="w-full mb-4">
+                    <div className="flex justify-between text-sm text-slate-600 mb-2">
+                      <span>Fazendo upload...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
                 <Button
                   onClick={handleStartProcessing}
                   disabled={!validation.isValid || uploadMutation.isPending}
-                  className={`w-full mt-6 font-medium ${
+                  className={`w-full mt-6 font-medium transition-all ${
                     validation.isValid
-                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      ? 'bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg'
                       : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                   }`}
                 >
