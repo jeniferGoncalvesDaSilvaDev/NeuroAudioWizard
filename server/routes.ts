@@ -1,12 +1,29 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
 import { insertProcessingJobSchema } from "@shared/schema";
+
+// WebSocket connections map for real-time updates
+const wsConnections = new Map<number, WebSocket[]>();
+
+// Function to broadcast updates to clients subscribed to a job
+function broadcastJobUpdate(jobId: number, data: any) {
+  const connections = wsConnections.get(jobId);
+  if (connections) {
+    const message = JSON.stringify(data);
+    connections.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+      }
+    });
+  }
+}
 
 const upload = multer({
   dest: "uploads/",
@@ -45,6 +62,46 @@ const ensureDirectories = () => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   ensureDirectories();
+  
+  const httpServer = createServer(app);
+  
+  // Setup WebSocket server for real-time updates
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  wss.on('connection', (ws, req) => {
+    console.log('[WebSocket] Client connected');
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        if (data.type === 'subscribe' && data.jobId) {
+          // Subscribe to job updates
+          const jobId = parseInt(data.jobId);
+          if (!wsConnections.has(jobId)) {
+            wsConnections.set(jobId, []);
+          }
+          wsConnections.get(jobId)!.push(ws);
+          console.log(`[WebSocket] Client subscribed to job ${jobId}`);
+        }
+      } catch (error) {
+        console.error('[WebSocket] Error parsing message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      // Remove from all subscriptions
+      wsConnections.forEach((connections, jobId) => {
+        const index = connections.indexOf(ws);
+        if (index !== -1) {
+          connections.splice(index, 1);
+          if (connections.length === 0) {
+            wsConnections.delete(jobId);
+          }
+        }
+      });
+      console.log('[WebSocket] Client disconnected');
+    });
+  });
 
   // Serve static files (generated audio and PDFs)
   app.use('/static', express.static('output'));
@@ -165,7 +222,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   return httpServer;
 }
 
