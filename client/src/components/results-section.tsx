@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ interface ResultsSectionProps {
   job: Job;
 }
 
-function ResultsSection({ job }: ResultsSectionProps) {
+const ResultsSection: React.FC<ResultsSectionProps> = ({ job }) => {
   const [downloadProgress, setDownloadProgress] = useState<{[key: string]: number}>({});
 
   const downloadFile = async (type: 'audio' | 'pdf') => {
@@ -190,6 +191,6 @@ function ResultsSection({ job }: ResultsSectionProps) {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default ResultsSection;
