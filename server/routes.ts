@@ -175,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Download generated files
+  // Download generated files with streaming support
   app.get('/api/download/:jobId/:type', async (req, res) => {
     try {
       const jobId = parseInt(req.params.jobId);
@@ -209,13 +209,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'File not found' });
       }
 
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      const fileSize = fs.statSync(filePath).size;
+      const rangeHeader = req.headers.range;
 
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
+      // Support for range requests (enables download progress and resume)
+      if (rangeHeader && type === 'audio') {
+        const parts = rangeHeader.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = (end - start) + 1;
+
+        res.status(206);
+        res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Content-Length', chunkSize);
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+
+        const fileStream = fs.createReadStream(filePath, { start, end });
+        fileStream.pipe(res);
+      } else {
+        // Regular download
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', fileSize);
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Accept-Ranges', 'bytes');
+
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+      }
 
     } catch (error) {
+      console.error('Download error:', error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : 'Download failed' 
       });
