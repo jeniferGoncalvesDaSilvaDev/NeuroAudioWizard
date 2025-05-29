@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 class Config:
     TOTAL_DURATION_SECONDS = 30
     DEFAULT_VOLUME = -10  # dB
-    MIN_FREQUENCY_HZ = 18000
-    MAX_FREQUENCY_HZ = 22000
-    SAMPLE_RATE = 44100  # Hz
+    MIN_FREQUENCY_HZ = 22000
+    MAX_FREQUENCY_HZ = 30000
+    SAMPLE_RATE = 96000  # Hz
     BIT_RATE = "192k"    # Quality
     REQUIRED_EXCEL_COLUMN = "THz"
 
