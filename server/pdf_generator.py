@@ -3,8 +3,18 @@ import datetime
 import numpy as np
 from fpdf import FPDF
 import logging
+import unicodedata
 
 logger = logging.getLogger(__name__)
+
+def remove_accents(text):
+    """Remove accents and special characters from text for PDF compatibility."""
+    if isinstance(text, str):
+        # Normalize unicode characters and remove accents
+        normalized = unicodedata.normalize('NFD', text)
+        ascii_text = normalized.encode('ascii', 'ignore').decode('ascii')
+        return ascii_text
+    return str(text)
 
 def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, output_dir):
     """Generate a comprehensive PDF report."""
@@ -14,6 +24,7 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
             
         pdf = FPDF()
         pdf.add_page()
+        # Use a font that supports unicode characters
         pdf.set_font("Arial", size=12)
         pdf.set_title("NeuroAudio Technical Report")
 
@@ -33,8 +44,8 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
         
         pdf.set_font("Arial", size=10)
         info_items = [
-            f"Company: {company_name}",
-            f"Aroma ID: {aroma_id}",
+            f"Company: {remove_accents(company_name)}",
+            f"Aroma ID: {remove_accents(aroma_id)}",
             f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             f"Total Frequencies: {len(frequencies)}",
             f"Audio Duration: 30 seconds",
@@ -43,7 +54,7 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
         ]
         
         for item in info_items:
-            pdf.cell(200, 6, txt=item, ln=True)
+            pdf.cell(200, 6, txt=remove_accents(item), ln=True)
         
         pdf.ln(10)
 
@@ -71,9 +82,9 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
         
         pdf.ln(10)
 
-        # Histograma de Frequências
+        # Histograma de Frequencias
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 8, txt="HISTOGRAMA DE FREQUÊNCIAS", ln=True)
+        pdf.cell(200, 8, txt="HISTOGRAMA DE FREQUENCIAS", ln=True)
         pdf.ln(5)
         
         pdf.set_font("Arial", size=8)

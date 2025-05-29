@@ -17,18 +17,24 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
-  // Auto download files when component mounts
+  // Auto download files when job completes
   useEffect(() => {
-    if (job.status === 'completed' && !autoDownloaded) {
+    if (job.status === 'completed' && job.audioFileName && job.pdfFileName && !autoDownloaded) {
+      // Show notification about auto download
+      toast({
+        title: "Downloads Automáticos",
+        description: "Iniciando downloads automáticos dos arquivos...",
+      });
+      
       setTimeout(() => {
         handleDownload('audio');
         setTimeout(() => {
           handleDownload('pdf');
-        }, 1000);
+        }, 1500);
         setAutoDownloaded(true);
-      }, 2000);
+      }, 1000);
     }
-  }, [job.status, autoDownloaded]);
+  }, [job.status, job.audioFileName, job.pdfFileName, autoDownloaded]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
