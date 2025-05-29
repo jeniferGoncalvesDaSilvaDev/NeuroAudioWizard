@@ -36,26 +36,21 @@ function ResultsSection({ job }: ResultsSectionProps) {
 
       const fileName = type === 'audio' ? job.audioFileName! : job.pdfFileName!;
       
-      // For mobile devices, open the download URL directly in a new tab
-      // This allows the browser's native download manager to handle it
       if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         const downloadUrl = `/api/download/${job.id}/${type}`;
         
-        // Create a temporary link and trigger click
         const link = document.createElement('a');
         link.href = downloadUrl;
         link.download = fileName;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         
-        // Add to DOM temporarily
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         
         setDownloadProgress(prev => ({ ...prev, [type]: 100 }));
         
-        // Clear progress after 3 seconds
         setTimeout(() => {
           setDownloadProgress(prev => {
             const newProgress = { ...prev };
@@ -67,7 +62,6 @@ function ResultsSection({ job }: ResultsSectionProps) {
         return;
       }
 
-      // For desktop browsers, use fetch with progress tracking
       const response = await fetch(`/api/download/${job.id}/${type}`);
 
       if (!response.ok) {
@@ -97,7 +91,6 @@ function ResultsSection({ job }: ResultsSectionProps) {
         }
       }
 
-      // Combine chunks and create blob
       const chunksAll = new Uint8Array(receivedLength);
       let position = 0;
       for (const chunk of chunks) {
@@ -109,7 +102,6 @@ function ResultsSection({ job }: ResultsSectionProps) {
         type: type === 'audio' ? 'audio/mpeg' : 'application/pdf'
       });
 
-      // Create download link that triggers browser download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -122,7 +114,6 @@ function ResultsSection({ job }: ResultsSectionProps) {
 
       setDownloadProgress(prev => ({ ...prev, [type]: 100 }));
 
-      // Clear progress after 3 seconds
       setTimeout(() => {
         setDownloadProgress(prev => {
           const newProgress = { ...prev };
