@@ -27,7 +27,7 @@ interface ResultsSectionProps {
   job: Job;
 }
 
-const ResultsSection: React.FC<ResultsSectionProps> = ({ job }) => {
+const ResultsSection = ({ job }: ResultsSectionProps) => {
   const [downloadProgress, setDownloadProgress] = useState<{[key: string]: number}>({});
 
   const downloadFile = async (type: 'audio' | 'pdf') => {
