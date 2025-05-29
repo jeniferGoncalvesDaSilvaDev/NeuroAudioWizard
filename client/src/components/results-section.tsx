@@ -157,10 +157,10 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
 
                 <div className="text-xs text-slate-500 mb-4">
                   <div className="grid grid-cols-2 gap-2">
-                    <div>Duration: <span className="font-medium">30 seconds</span></div>
-                    <div>Format: <span className="font-medium">MP3 192kbps</span></div>
-                    <div>Frequencies: <span className="font-medium">{job.frequencyCount}</span></div>
-                    <div>Company: <span className="font-medium">{job.company_name}</span></div>
+                    <div>Duração: <span className="font-medium">30 segundos</span></div>
+                    <div>Formato: <span className="font-medium">MP3 192kbps</span></div>
+                    <div>Frequências: <span className="font-medium">{job.frequencyCount}</span></div>
+                    <div>Empresa: <span className="font-medium">{job.company_name}</span></div>
                   </div>
                 </div>
 
@@ -169,7 +169,7 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                   className="w-full bg-primary hover:bg-primary/90 text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Download MP3
+                  Baixar MP3
                 </Button>
               </div>
             </div>
@@ -182,28 +182,28 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                 <FileText className="w-6 h-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-slate-900 mb-2">Technical Report (PDF)</h4>
+                <h4 className="font-semibold text-slate-900 mb-2">Relatório Técnico (PDF)</h4>
                 <p className="text-sm text-slate-600 mb-4">{job.pdfFileName}</p>
                 
                 {/* Report Preview */}
                 <div className="bg-slate-50 rounded-lg p-4 mb-4">
                   <div className="text-xs text-slate-600 space-y-1">
-                    <div className="font-medium">Report Contents:</div>
-                    <div>• Processing Parameters</div>
-                    <div>• Frequency Analysis Summary</div>
-                    <div>• Audio Generation Details</div>
-                    <div>• Quality Metrics</div>
-                    <div>• Technical Specifications</div>
+                    <div className="font-medium">Conteúdo do Relatório:</div>
+                    <div>• Parâmetros de Processamento</div>
+                    <div>• Resumo da Análise de Frequência</div>
+                    <div>• Histograma de Frequências</div>
+                    <div>• Detalhes de Geração de Áudio</div>
+                    <div>• Especificações Técnicas</div>
                   </div>
                 </div>
 
                 <div className="text-xs text-slate-500 mb-4">
                   <div className="grid grid-cols-2 gap-2">
-                    <div>Pages: <span className="font-medium">3</span></div>
-                    <div>Format: <span className="font-medium">PDF</span></div>
-                    <div>Aroma ID: <span className="font-medium">{job.aroma_id}</span></div>
-                    <div>Generated: <span className="font-medium">
-                      {job.completedAt ? new Date(job.completedAt).toLocaleString() : 'Just now'}
+                    <div>Páginas: <span className="font-medium">3</span></div>
+                    <div>Formato: <span className="font-medium">PDF</span></div>
+                    <div>ID Aroma: <span className="font-medium">{job.aroma_id}</span></div>
+                    <div>Gerado: <span className="font-medium">
+                      {job.completedAt ? new Date(job.completedAt).toLocaleString('pt-BR') : 'Agora mesmo'}
                     </span></div>
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                   className="w-full bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Download PDF
+                  Baixar PDF
                 </Button>
               </div>
             </div>
