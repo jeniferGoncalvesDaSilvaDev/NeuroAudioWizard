@@ -71,6 +71,32 @@ def generate_pdf_report(frequencies, pdf_filename, aroma_id, company_name, outpu
         
         pdf.ln(10)
 
+        # Histograma de Frequências
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 8, txt="HISTOGRAMA DE FREQUÊNCIAS", ln=True)
+        pdf.ln(5)
+        
+        pdf.set_font("Arial", size=8)
+        
+        # Criar bins para o histograma
+        freq_array = np.array(frequencies)
+        hist, bin_edges = np.histogram(freq_array, bins=8)
+        
+        # Desenhar histograma simples em texto
+        max_count = max(hist) if len(hist) > 0 else 1
+        
+        for i, (count, start, end) in enumerate(zip(hist, bin_edges[:-1], bin_edges[1:])):
+            # Barra visual usando caracteres
+            bar_length = int((count / max_count) * 30) if max_count > 0 else 0
+            bar = "█" * bar_length + "░" * (30 - bar_length)
+            
+            range_text = f"{start:.3f}-{end:.3f} THz"
+            pdf.cell(40, 4, txt=range_text, ln=False)
+            pdf.cell(40, 4, txt=bar, ln=False)
+            pdf.cell(15, 4, txt=f"({count})", ln=True)
+        
+        pdf.ln(10)
+
         # Technical Parameters
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 8, txt="TECHNICAL PARAMETERS", ln=True)

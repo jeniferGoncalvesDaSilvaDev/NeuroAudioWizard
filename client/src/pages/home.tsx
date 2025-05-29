@@ -184,37 +184,37 @@ export default function Home() {
                 <span className="font-bold text-white">NeuroAudio</span>
               </div>
               <p className="text-sm text-slate-400 mb-4">
-                Professional audio frequency processing platform for scientific and research applications.
+                Plataforma profissional de processamento de frequências de áudio para aplicações científicas e de pesquisa.
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Platform</h4>
+              <h4 className="font-semibold text-white mb-4">Plataforma</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Audio Processing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Frequency Analysis</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Report Generation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Batch Processing</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Processamento de Áudio</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Análise de Frequência</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Geração de Relatórios</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Processamento em Lote</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Resources</h4>
+              <h4 className="font-semibold text-white mb-4">Recursos</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Sample Files</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Best Practices</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Documentação</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Referência da API</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Arquivos de Exemplo</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Melhores Práticas</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Support</h4>
+              <h4 className="font-semibold text-white mb-4">Suporte</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Support</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contatar Suporte</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Status do Sistema</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
               </ul>
             </div>
           </div>

@@ -13,8 +13,22 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(30); // 30 seconds as per specs
+  const [autoDownloaded, setAutoDownloaded] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
+
+  // Auto download files when component mounts
+  useEffect(() => {
+    if (job.status === 'completed' && !autoDownloaded) {
+      setTimeout(() => {
+        handleDownload('audio');
+        setTimeout(() => {
+          handleDownload('pdf');
+        }, 1000);
+        setAutoDownloaded(true);
+      }, 2000);
+    }
+  }, [job.status, autoDownloaded]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -69,13 +83,13 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "Download Started",
-        description: `${type === 'audio' ? 'Audio file' : 'PDF report'} download has started.`,
+        title: "Download Iniciado",
+        description: `Download do ${type === 'audio' ? 'arquivo de áudio' : 'relatório PDF'} foi iniciado.`,
       });
     } catch (error) {
       toast({
-        title: "Download Failed",
-        description: error instanceof Error ? error.message : "Failed to download file",
+        title: "Falha no Download",
+        description: error instanceof Error ? error.message : "Falha ao fazer download do arquivo",
         variant: "destructive",
       });
     }
@@ -87,9 +101,9 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-slate-900">Generated Files</h3>
+          <h3 className="text-xl font-semibold text-slate-900">Arquivos Gerados</h3>
           <span className="px-3 py-1 text-sm font-medium bg-green-100 text-green-700 rounded-full">
-            Step 3 of 3 • Complete
+            Etapa 3 de 3 • Completa
           </span>
         </div>
 
@@ -101,7 +115,7 @@ export default function ResultsSection({ job }: ResultsSectionProps) {
                 <Music className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-slate-900 mb-2">Audio File (MP3)</h4>
+                <h4 className="font-semibold text-slate-900 mb-2">Arquivo de Áudio (MP3)</h4>
                 <p className="text-sm text-slate-600 mb-4">{job.audioFileName}</p>
                 
                 {/* Audio Player */}
